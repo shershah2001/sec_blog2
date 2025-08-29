@@ -18,7 +18,7 @@ class Blog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='thumbnail',blank=True,null=True)
-    published = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
     
     def __str__(self):
         return self.title
@@ -32,4 +32,11 @@ class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
         fields = ['title','content','image','published']
+        widgets ={
+            'title':forms.TextInput(attrs={'class':'form-control'}),
+            'content':forms.Textarea(attrs={'class':'form-control','rows':2}),
+            'image':forms.ClearableFileInput(attrs={'class':'form-control'}),
+            'published':forms.CheckboxInput(attrs={'class':'form-check-input'})
+        }
         
+    
