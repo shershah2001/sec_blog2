@@ -40,3 +40,4 @@ class BlogForm(forms.ModelForm):
         }
         
     
+    
