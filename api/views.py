@@ -2,10 +2,34 @@ from django.shortcuts import render,redirect
 from api.models import Author,Blog,BlogForm
 from api.forms import Signup,Login
 from django.contrib.auth import login,logout
+import datetime
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 # Create your views here.
 
 def home_view(request):
-    return render(request,'api/index.html')
+    week_ago = datetime.date.today() - datetime.timedelta(days=7)
+    trends = Blog.objects.filter(created_at__gte=week_ago).order_by('-read')
+    topAuthor = Author.objects.order_by('-rate')[:4]
+    AuthorsPost = [Blog.objects.filter(author = author).first()  for author in topAuthor]
+    all_post = Paginator(Blog.objects.filter(published=True),3)
+    # post=Blog.objects.filter(published=True)
+    # print("post==>", [cat for post in post for cat in post.categories.all()])
+    page = request.GET.get('page')
+    
+    try:
+        posts = all_post.page(page)
+    except PageNotAnInteger:
+        posts = all_post.page(1)
+    except EmptyPage:
+        posts = all_post.page(all_post.num_pages)
+   
+    data={
+        'posts':posts,   
+        'trends':trends[:5],
+        'author_post':AuthorsPost,
+        'pop_post':Blog.objects.order_by("-read")[:9],
+    }
+    return render(request,'api/index.html',data)
 
 def contact_view(request):
     return render(request,'api/contact.html')
@@ -13,12 +37,17 @@ def contact_view(request):
 def category_view(request):
     return render(request,'api/category.html')
     
+def detail_view(request):
+    
+    return render(request,'api/blog-single.html')
+
 def create_view(request):
     if request.method == "POST":
         form = BlogForm(request.POST, request.FILES)  # include files for image upload
         if form.is_valid():
             blog = form.save(commit=False)  # don’t save yet
-            blog.author = Author.objects.get(user=request.user)  # assign logged-in user’s author
+            blog.author, created = Author.objects.get_or_create(user=request.user)
+            # assign logged-in user’s author
             blog.save()
             return redirect('home')
     else:
@@ -53,8 +82,6 @@ def login_view(request):
     return render(request,'api/form.html',{'form':form,'form_title':'Login'})
         
             
-    
 
-            
         
         

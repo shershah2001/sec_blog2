@@ -4,49 +4,35 @@
 
     <div class="site-section py-0">
       <div class="owl-carousel hero-slide owl-style">
-
+        {% for post in posts|slice:":5" %}
+        
         <div class="site-section">
           <div class="container">
             <div class="half-post-entry d-block d-lg-flex bg-light">
-              <div class="img-bg" style="background-image: url('images/big_img_1.jpg')"></div>
+              <div class="img-bg" style="background-image: url('{{post.image.url}}')">{{post.author.user.username}}</div>
               <div class="contents">
                 <span class="caption">Editor's Pick</span>
-                <h2><a href="https://preview.colorlib.com/theme/meranda/blog-single.html">News Needs to Meet Its Audiences Where They Are</a></h2>
-                <p class="mb-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate vero obcaecati natus adipisci necessitatibus eius, enim vel sit ad reiciendis. Enim praesentium magni delectus cum, tempore deserunt aliquid quaerat culpa nemo veritatis, iste adipisci excepturi consectetur doloribus aliquam accusantium beatae?</p>
+                <h2><a href="https://preview.colorlib.com/theme/meranda/blog-single.html">{{post.title}}</a></h2>
+                <p class="mb-3">{{post.content}}</p>
                 
                 <div class="post-meta">
-                  <span class="d-block"><a href="index.html#">Dave Rogers</a> in <a href="index.html#">Food</a></span>
-                  <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span class="icon-star2"></span></span>
+                  
+                  <span class="d-block">
+                    {% for cat in post.categories.all %}
+                    <a href="{% url 'category' %}">{{cat}}</a>,
+                    {% endfor %}
+                    </span>
+                  
+                  <span class="date-read">{{post.created_at}}<span class="mx-1">&bullet;</span>{{post.read}} read<span class="icon-star2"></span></span>
                 </div>
 
               </div>
             </div>
           </div>
         </div>
-
-        <div class="site-section">
-          <div class="container">
-            <div class="half-post-entry d-block d-lg-flex bg-light">
-              <div class="img-bg" style="background-image: url('images/big_img_1.jpg')"></div>
-              <div class="contents">
-                <span class="caption">Editor's Pick</span>
-                <h2><a href="https://preview.colorlib.com/theme/meranda/blog-single.html">News Needs to Meet Its Audiences Where They Are</a></h2>
-                <p class="mb-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate vero obcaecati natus adipisci necessitatibus eius, enim vel sit ad reiciendis. Enim praesentium magni delectus cum, tempore deserunt aliquid quaerat culpa nemo veritatis, iste adipisci excepturi consectetur doloribus aliquam accusantium beatae?</p>
-                
-                <div class="post-meta">
-                  <span class="d-block"><a href="index.html#">Dave Rogers</a> in <a href="index.html#">Food</a></span>
-                  <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span class="icon-star2"></span></span>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-
-
+       {% endfor %}
       </div>
     </div>
-  
 
     <div class="site-section">
       <div class="container">
@@ -268,8 +254,6 @@
       </div>
     </div>
 
-
-
     <div class="site-section">
       <div class="container">
         <div class="row">
@@ -371,12 +355,26 @@
 
         <div class="row">
           <div class="col-lg-6">
-            <ul class="custom-pagination list-unstyled">
-              <li><a href="index.html#">1</a></li>
-              <li class="active">2</li>
-              <li><a href="index.html#">3</a></li>
-              <li><a href="index.html#">4</a></li>
-            </ul>
+             <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                  {% if posts.has_previous %}
+
+                    <li class="page-item">
+                      <a class="page-link" href="?page{{posts.previous_page_number}}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                    <li class="page-item"><a class="page-link" href="#">{{posts.number}}</a></li>
+                  {% if posts.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page{{posts.next_page_number}}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
           </div>
         </div>
       </div>

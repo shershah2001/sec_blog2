@@ -10,6 +10,12 @@ class Author(models.Model):
     def __str__(self):
         return self.user.username
 
+class Categories(models.Model):
+    title = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.title
+
 class Blog(models.Model):
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
@@ -19,6 +25,8 @@ class Blog(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='thumbnail',blank=True,null=True)
     published = models.BooleanField(default=False)
+    categories = models.ManyToManyField(Categories)
+    read = models.IntegerField(default=0)
     
     def __str__(self):
         return self.title
