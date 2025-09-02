@@ -19,7 +19,7 @@
                   
                   <span class="d-block">
                     {% for cat in post.categories.all %}
-                    <a href="{% url 'category' %}">{{cat}}</a>,
+                    <a href="{% url 'category' cat.slug %}">{{cat}}</a>,
                     {% endfor %}
                     </span>
                   

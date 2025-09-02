@@ -12,9 +12,15 @@ class Author(models.Model):
 
 class Categories(models.Model):
     title = models.CharField(max_length=100)
+    slug = models.SlugField(null=True,blank=True,unique=True)
     
     def __str__(self):
         return self.title
+    
+    def save(self,*args, **kwargs):
+        if not self.slug:
+            self.slug = self.title.lower().replace(' ','-')
+        super().save(*args, **kwargs)
 
 class Blog(models.Model):
     author = models.ForeignKey(Author,on_delete=models.CASCADE)

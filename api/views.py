@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect
-from api.models import Author,Blog,BlogForm
+from django.shortcuts import render,redirect,get_object_or_404
+from api.models import Author,Blog,BlogForm,Categories
 from api.forms import Signup,Login
 from django.contrib.auth import login,logout
 import datetime
@@ -34,8 +34,10 @@ def home_view(request):
 def contact_view(request):
     return render(request,'api/contact.html')
 
-def category_view(request):
-    return render(request,'api/category.html')
+def category_view(request,slug):
+    category  = get_object_or_404(Categories, slug=slug)
+    blog = Blog.objects.filter(categories=category,published=True)
+    return render(request,'api/category.html',{"category":category,"blog":blog})
     
 def detail_view(request):
     
