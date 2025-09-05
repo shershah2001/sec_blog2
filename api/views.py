@@ -4,7 +4,18 @@ from api.forms import Signup,Login
 from django.contrib.auth import login,logout
 import datetime
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+
+def profile_view(request):
+    author = Author.objects.get(user=request.user)
+    posts = Blog.objects.filter(author = author,published=True)
+    print("posts==>",posts,"author==>",author)
+    data={
+        'author':author,
+        'posts':posts
+    }
+    return render(request,'api/profile.html',data)
 
 def home_view(request):
     week_ago = datetime.date.today() - datetime.timedelta(days=7)
@@ -39,9 +50,10 @@ def category_view(request,slug):
     blog = Blog.objects.filter(categories=category,published=True)
     return render(request,'api/category.html',{"category":category,"blog":blog})
     
-def detail_view(request):
-    
-    return render(request,'api/blog-single.html')
+
+def detail_view(request,slug):
+    blog = Blog.objects.get(slug = slug, published=True)
+    return render(request,'api/blog-single.html',{'blog':blog})
 
 def create_view(request):
     if request.method == "POST":
@@ -82,7 +94,19 @@ def login_view(request):
     else:
         form = Login()
     return render(request,'api/form.html',{'form':form,'form_title':'Login'})
-        
+
+def logout_view(request):
+    if request.method =='POST':
+        logout(request)
+        return redirect('signup')
+    
+@login_required
+def edit_view(request, slug):
+    blog = get_object_or_404(Blog, slug=slug, published=True)
+    return render(request, 'api/create.html', {'data': blog})
+
+def delete_view(request,slug):
+    pass
             
 
         

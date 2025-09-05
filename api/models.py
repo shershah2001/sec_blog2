@@ -5,6 +5,7 @@ from django import forms
 
 class Author(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="thumbnail/", default="thumbnail/user.png")
     rate = models.IntegerField(default=0)
     
     def __str__(self):
@@ -53,5 +54,6 @@ class BlogForm(forms.ModelForm):
             'published':forms.CheckboxInput(attrs={'class':'form-check-input'})
         }
         
-    
+
+
     
