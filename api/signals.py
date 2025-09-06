@@ -5,5 +5,6 @@ from .models import Author
 
 @receiver(post_save,sender=User)
 def create_author(sender,instance,created,**kwargs):
+    # print("instance==>",instance) it gives username of that author.
     if created:
         Author.objects.create(user=instance)

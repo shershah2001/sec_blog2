@@ -5,6 +5,7 @@ from django.contrib.auth import login,logout
 import datetime
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 # Create your views here.
 
 def profile_view(request):
@@ -66,7 +67,7 @@ def create_view(request):
             return redirect('home')
     else:
         form = BlogForm()
-    return render(request, 'api/create.html', {'form': form})
+    return render(request, 'api/create.html', {'form': form,'form_title':'Create Blog'})
 
 def signup_view(request):
     if request.method == 'POST':
@@ -101,12 +102,31 @@ def logout_view(request):
         return redirect('signup')
     
 @login_required
-def edit_view(request, slug):
-    blog = get_object_or_404(Blog, slug=slug, published=True)
-    return render(request, 'api/create.html', {'data': blog})
-
+def edit_view(request,slug):
+    author = get_object_or_404(Author,user=request.user)
+    blog = get_object_or_404(Blog,slug=slug,author=author)
+    if request.method == "POST":
+        print("form==>",BlogForm(instance=blog))
+        form = BlogForm(request.POST,request.FILES,instance=blog)
+        print("form==>1",BlogForm(instance=blog))
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Post edit successfully!!')
+            return redirect('detail',slug=blog.slug)
+    else:
+        form=BlogForm(instance=blog)
+    return render(request,'api/create.html',{'form':form,'blog':blog,'form_title':'Edit Blog'})
+            
+@login_required
 def delete_view(request,slug):
-    pass
+    author = get_object_or_404(Author,user=request.user)
+    blog = get_object_or_404(Blog,slug=slug,author=author)
+    if request.method == "POST":
+        blog.delete()
+        messages.success(request,'Post successfully deleted!!')
+        return redirect('profile')
+    return render(request,'api/delete.html',{"blog":blog})
+
             
 
         
